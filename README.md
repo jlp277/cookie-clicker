@@ -12,3 +12,4 @@ cookie-clicker
 - Check if opportunity cost of waiting to buy next product is worth not buying current available.
 - Add clicker-upgrade capability
 - Add selling capability. Sell slow products now to get money for shiny expensive ones quicker.
+- Add persistence between selenium sessions. Perhaps use the user's default browser profile in webdriver?
