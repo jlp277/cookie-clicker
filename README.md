@@ -7,6 +7,6 @@ cookie-clicker
 
 <b>Todo</b>
 - Regulate how often products are bought
-  One rate of buying new products may to too slow when everything is cheap and also too fast when things get expensive.
+    One rate of buying new products may to too slow when everything is cheap and also too fast when things get expensive.
 - Check if opportunity cost of waiting to buy next product is worth not buying current available.
 - Add clicker-upgrade capability
