@@ -1,0 +1,13 @@
+<ivy-module version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info
+        organisation="com.workday.ui.fixture"
+        module="FixtureServer"
+        status="integration">
+	</info>
+	<dependencies>
+		<dependency org="junit" name="junit" rev="4.11" />
+		<dependency org="org.seleniumhq.selenium" name="selenium-java" rev="2.42.2"/>		
+		<dependency org="org.seleniumhq.selenium" name="selenium-chrome-driver" rev="2.42.2"/>
+	</dependencies>
+</ivy-module>
