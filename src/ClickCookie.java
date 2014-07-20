@@ -1,22 +1,24 @@
-import java.util.regex.Pattern;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-
-import com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor;
-
 
 public class ClickCookie {
 	private static int highproduct = 0;
 	private static JavascriptExecutor jse;
 	private static FirefoxDriver driver;
+	private static Map<Integer,Double> prices;
+	private static Map<Integer,Double> cookrates;
 
 	public static void main(String[] args) {
 		driver = new FirefoxDriver();
 		jse = (JavascriptExecutor) driver;
 		driver.get("http://orteil.dashnet.org/cookieclicker/");
+		prices = new HashMap<Integer,Double>();
+		cookrates = new HashMap<Integer,Double>();
 		while (true) {
 			// find highest item
 			// get cookie per second
@@ -25,7 +27,7 @@ public class ClickCookie {
 			driver.findElement(By.id("product"+ bestProdToBuy())).click();
 			// buy next product
 			int i;
-			for (i = 0; i <= 200; i++) {
+			for (i = 0; i <= 20; i++) {
 				driver.findElement(By.id("bigCookie")).click();
 			}
 		}
@@ -49,22 +51,33 @@ public class ClickCookie {
 	}
 
 	private static boolean isHigherWorthIt(int i) {
-		float hiprice = getPrice(i + 1);
-		float hicooksec = getCookiePerSecond(i + 1);
-		float loprice = getPrice(i);
-		float locooksec = getCookiePerSecond(i);
+		double hiprice = getPrice(i + 1);
+		double hicooksec = getCookiePerSecond(i + 1);
+		double loprice = getPrice(i);
+		double locooksec = getCookiePerSecond(i);
 		return (hiprice/hicooksec) < (loprice/locooksec);
 	}
 
-	private static float getCookiePerSecond(int prodno) {
-		// the cookies per second of product numbered <prodno>
-		String jsQuery="return Game.ObjectsById[" + prodno + "].storedTotalCps*Game.globalCpsMult";
-		return Float.parseFloat(jse.executeScript(jsQuery).toString());
+	private static Double getCookiePerSecond(int prodno) {
+		if (cookrates.containsKey(prodno)) {
+			return cookrates.get(prodno);
+		} else {
+			// the cookies per second of product numbered <prodno>
+			String jsQuery="return Game.ObjectsById[" + prodno + "].storedTotalCps*Game.globalCpsMult";
+			Double cookrate = Double.parseDouble(jse.executeScript(jsQuery).toString());
+			cookrates.put(prodno, cookrate); 
+			return cookrate;
+		}
 	}
 
-	private static int getPrice(int prodno) {
-		String jsQuery = "return Game.ObjectsById[" + prodno + "].name";
-		jsQuery = "return Game.ObjectsById[" + prodno + "].price";
-		return Integer.parseInt(jse.executeScript(jsQuery).toString());
+	private static Double getPrice(int prodno) {
+		if (prices.containsKey(prodno)) {
+			return prices.get(prodno);
+		} else {
+			String jsQuery = "return Game.ObjectsById[" + prodno + "].price";
+			Double price = Double.parseDouble(jse.executeScript(jsQuery).toString());
+			prices.put(prodno, price);
+			return price;
+		}
 	}
 }
