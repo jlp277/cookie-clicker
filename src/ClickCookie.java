@@ -44,10 +44,7 @@ public class ClickCookie {
 
 	private static int bestProdToBuy() {
 		int i = highproduct;
-		while (isHigherWorthIt(i)) {
-			i--;
-		}
-//		System.out.println("best to buy: " + i);
+		while (isHigherWorthIt(i)) { i--; }
 		return i;
 	}
 
@@ -56,7 +53,6 @@ public class ClickCookie {
 		float hicooksec = getCookiePerSecond(i + 1);
 		float loprice = getPrice(i);
 		float locooksec = getCookiePerSecond(i);
-//		System.out.println("higher worth it: " + ((hiprice/hicooksec) < (loprice/locooksec)));
 		return (hiprice/hicooksec) < (loprice/locooksec);
 	}
 
@@ -68,7 +64,6 @@ public class ClickCookie {
 
 	private static int getPrice(int prodno) {
 		String jsQuery = "return Game.ObjectsById[" + prodno + "].name";
-//		System.out.println("name" + jse.executeScript(jsQuery).toString());
 		jsQuery = "return Game.ObjectsById[" + prodno + "].price";
 		return Integer.parseInt(jse.executeScript(jsQuery).toString());
 	}
