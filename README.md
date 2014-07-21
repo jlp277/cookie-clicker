@@ -16,7 +16,7 @@ cookie-clicker
 
 	Currently, only algorithm in play is a greedy one. Incorporate dynamic programming - what linear combination of products will get me top product fastest?
 - Check for bogus products. There may be a case where certain product is not valuable but the next locked one is. 
-- Add clicker-upgrade capability
+- Add clicker-upgrade capability.
 - Add selling capability. Sell slow products now to get money for shiny expensive ones quicker.
 - ~~Add persistence between selenium sessions. Perhaps use the user's default browser profile in webdriver?~~
 	
@@ -27,4 +27,5 @@ cookie-clicker
 - ~~parseInt() cannot handle large integers. possibly use parseLong().~~
 
 <b>Meta</b>
-- learn how versioning roadmaps work
+- Refactoring. Make bestProduct method extendable to classes that others can implement.
+- Version roadmap

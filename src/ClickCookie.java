@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +58,9 @@ public class ClickCookie {
 		}
 		byte[] loadcodebytes = Files.readAllBytes(loadfile);
 		if (loadcodebytes.length > 0) {
-			System.out.println("Loading game from file.");
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+			
+			System.out.println("Loading game from file last saved: " + sdf.format(f.lastModified()));
 			String loadcode = new String(loadcodebytes).trim();
 			String jsQuery = "Game.ImportSaveCode('" + loadcode + "')";
 			jse.executeScript(jsQuery);
