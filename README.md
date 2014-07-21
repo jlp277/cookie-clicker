@@ -18,11 +18,13 @@ cookie-clicker
 - Check for bogus products. There may be a case where certain product is not valuable but the next locked one is. 
 - Add clicker-upgrade capability
 - Add selling capability. Sell slow products now to get money for shiny expensive ones quicker.
-- Add persistence between selenium sessions. Perhaps use the user's default browser profile in webdriver?
-- Save prices and cookie per second stats in a hashtable.
+- ~~Add persistence between selenium sessions. Perhaps use the user's default browser profile in webdriver?~~
+	
+	~~Or use ingame import export feature.~~
+- ~~Save prices and cookie per second stats in a hashtable.~~
 
 <b>Known Issues</b>
-- parseInt() cannot handle large integers. possibly use parseLong().
+- ~~parseInt() cannot handle large integers. possibly use parseLong().~~
 
 <b>Meta</b>
 - learn how versioning roadmaps work
