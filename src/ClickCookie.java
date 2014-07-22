@@ -32,14 +32,16 @@ public class ClickCookie {
 		prices = new HashMap<Integer,Double>();
 		cookrates = new HashMap<Integer,Double>();
 		loadfile = Paths.get(loadfilepath).normalize();
-		
+
 		loadGame();
-		
+
 		while (true) {
 			// find highest item
 			// get cookie per second
 			// check if its worth it to buy next product
-			updateHighProduct();
+			if (highproduct < 10) {
+				updateHighProduct();
+			}
 			driver.findElement(By.id("product"+ bestProdToBuy())).click();
 			saveGame();
 			// buy next product
@@ -49,24 +51,24 @@ public class ClickCookie {
 			}
 		}
 	}
-	
+
 	private static void loadGame() throws IOException {
 		File f = loadfile.toFile();
 		if(!f.isFile()) {
 			System.out.println("New game instance. Creating save file.");
-		    f.createNewFile();
+			f.createNewFile();
 		}
 		byte[] loadcodebytes = Files.readAllBytes(loadfile);
 		if (loadcodebytes.length > 0) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-			
+
 			System.out.println("Loading game from file last saved: " + sdf.format(f.lastModified()));
 			String loadcode = new String(loadcodebytes).trim();
 			String jsQuery = "Game.ImportSaveCode('" + loadcode + "')";
 			jse.executeScript(jsQuery);
 		}
 	}
-	
+
 	private static void saveGame() throws IOException {
 		String jsQuery = "return Game.WriteSave(1)";
 		byte[] loadcode = (jse.executeScript(jsQuery).toString()).getBytes(Charset.forName("UTF-8"));;
@@ -74,26 +76,23 @@ public class ClickCookie {
 	}
 
 	private static void updateHighProduct() {
-		int i = highproduct + 1;
 		String jsQuery = "return Game.ObjectsById[" + (highproduct + 1) + "].locked";
-		int islocked = Integer.parseInt(jse.executeScript(jsQuery).toString());
-		if (islocked == 0) {
-			System.out.println("highproduct: " + highproduct);
+		if (Integer.parseInt(jse.executeScript(jsQuery).toString()) == 0) {
 			highproduct++;
 		}
 	}
 
 	private static int bestProdToBuy() {
 		int i = highproduct;
-		while (isHigherWorthIt(i)) { i--; }
+		while ((i > 0) && isHigherWorthIt(i)) { i--; }
 		return i;
 	}
 
-	private static boolean isHigherWorthIt(int i) {
-		double hiprice = getPrice(i + 1);
-		double hicooksec = getCookiePerSecond(i + 1);
-		double loprice = getPrice(i);
-		double locooksec = getCookiePerSecond(i);
+	private static boolean isHigherWorthIt(int high) {
+		double hiprice = getPrice(high);
+		double hicooksec = getCookiePerSecond(high);
+		double loprice = getPrice(high - 1);
+		double locooksec = getCookiePerSecond(high - 1);
 		return (hiprice/hicooksec) < (loprice/locooksec);
 	}
 

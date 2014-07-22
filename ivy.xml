@@ -9,5 +9,6 @@
 		<dependency org="junit" name="junit" rev="4.11" />
 		<dependency org="org.seleniumhq.selenium" name="selenium-java" rev="2.42.2"/>		
 		<dependency org="org.seleniumhq.selenium" name="selenium-chrome-driver" rev="2.42.2"/>
+		<dependency org="com.github.detro.ghostdriver" name="phantomjsdriver" rev="1.1.0" />
 	</dependencies>
 </ivy-module>
