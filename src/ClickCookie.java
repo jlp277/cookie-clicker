@@ -18,7 +18,7 @@ public class ClickCookie {
 	private static FirefoxDriver driver;
 	private static Map<Integer,Double> prices;
 	private static Map<Integer,Double> cookrates;
-	private final static String loadfilepath = "/Users/James/Documents/workspace/cookie-clicker/resources/loadfile.txt";
+	private final static String loadfilepath = "./resources/loadfile.txt";
 	private static Path loadfile;
 
 	public static void main(String[] args) throws IOException {
