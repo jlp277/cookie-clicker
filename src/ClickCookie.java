@@ -1,9 +1,5 @@
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,17 +32,13 @@ public class ClickCookie {
 		loadGame();
 
 		while (true) {
-			// find highest item
-			// get cookie per second
-			// check if its worth it to buy next product
-			if (highproduct < 10) {
-				updateHighProduct();
-			}
+			if (highproduct < 10) updateHighProduct();
 			driver.findElement(By.id("product"+ bestProdToBuy())).click();
 			saveGame();
-			// buy next product
-			int i;
-			for (i = 0; i <= 20; i++) {
+			
+			long t = System.currentTimeMillis();
+			long end = t + 15000;
+			while (System.currentTimeMillis() < end) {
 				driver.findElement(By.id("bigCookie")).click();
 			}
 		}
@@ -84,7 +76,10 @@ public class ClickCookie {
 
 	private static int bestProdToBuy() {
 		int i = highproduct;
-		while ((i > 0) && isHigherWorthIt(i)) { i--; }
+		while ((i > 0) && (getPrice(i) > getCookiesInBank())) { i--; }
+		System.out.println("Can afford: " + i);
+		while ((i > 0) && (!isHigherWorthIt(i))) { i--; }
+		System.out.println("Will buy: " + i);
 		return i;
 	}
 
@@ -93,29 +88,36 @@ public class ClickCookie {
 		double hicooksec = getCookiePerSecond(high);
 		double loprice = getPrice(high - 1);
 		double locooksec = getCookiePerSecond(high - 1);
+		System.out.println(high + " Ratio: " + hiprice/hicooksec + " and " + (high - 1) + " Ratio: " + loprice/locooksec);
 		return (hiprice/hicooksec) < (loprice/locooksec);
 	}
-
+	
+	private static Double getCookiesInBank() {
+		String jsQuery = "return Game.cookies";
+		Double cookrate = Double.parseDouble(jse.executeScript(jsQuery).toString());
+		return cookrate;
+	}
+	
 	private static Double getCookiePerSecond(int prodno) {
-		if (cookrates.containsKey(prodno)) {
-			return cookrates.get(prodno);
-		} else {
+//		if (cookrates.containsKey(prodno)) {
+//			return cookrates.get(prodno);
+//		} else {
 			// the cookies per second of product numbered <prodno>
 			String jsQuery="return Game.ObjectsById[" + prodno + "].storedTotalCps*Game.globalCpsMult";
 			Double cookrate = Double.parseDouble(jse.executeScript(jsQuery).toString());
 			cookrates.put(prodno, cookrate); 
 			return cookrate;
-		}
+//		}
 	}
 
 	private static Double getPrice(int prodno) {
-		if (prices.containsKey(prodno)) {
-			return prices.get(prodno);
-		} else {
+//		if (prices.containsKey(prodno)) {
+//			return prices.get(prodno);
+//		} else {
 			String jsQuery = "return Game.ObjectsById[" + prodno + "].price";
 			Double price = Double.parseDouble(jse.executeScript(jsQuery).toString());
 			prices.put(prodno, price);
 			return price;
-		}
+//		}
 	}
 }
