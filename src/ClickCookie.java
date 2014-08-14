@@ -16,8 +16,6 @@ public class ClickCookie {
 	private static int highproduct = 0;
 	private static JavascriptExecutor jse;
 	private static FirefoxDriver driver;
-	private static Map<Integer,Double> prices;
-	private static Map<Integer,Double> cookrates;
 	private final static String loadfilepath = "./resources/loadfile.txt";
 	private static Path loadfile;
 
@@ -25,8 +23,6 @@ public class ClickCookie {
 		driver = new FirefoxDriver();
 		jse = (JavascriptExecutor) driver;
 		driver.get("http://orteil.dashnet.org/cookieclicker/");
-		prices = new HashMap<Integer,Double>();
-		cookrates = new HashMap<Integer,Double>();
 		loadfile = Paths.get(loadfilepath).normalize();
 
 		loadGame();
@@ -35,7 +31,7 @@ public class ClickCookie {
 			if (highproduct < 10) updateHighProduct();
 			driver.findElement(By.id("product"+ bestProdToBuy())).click();
 			saveGame();
-			
+
 			long t = System.currentTimeMillis();
 			long end = t + 15000;
 			while (System.currentTimeMillis() < end) {
@@ -91,33 +87,22 @@ public class ClickCookie {
 		System.out.println(high + " Ratio: " + hiprice/hicooksec + " and " + (high - 1) + " Ratio: " + loprice/locooksec);
 		return (hiprice/hicooksec) < (loprice/locooksec);
 	}
-	
+
 	private static Double getCookiesInBank() {
 		String jsQuery = "return Game.cookies";
 		Double cookrate = Double.parseDouble(jse.executeScript(jsQuery).toString());
 		return cookrate;
 	}
-	
+
 	private static Double getCookiePerSecond(int prodno) {
-//		if (cookrates.containsKey(prodno)) {
-//			return cookrates.get(prodno);
-//		} else {
-			// the cookies per second of product numbered <prodno>
-			String jsQuery="return Game.ObjectsById[" + prodno + "].storedTotalCps*Game.globalCpsMult";
-			Double cookrate = Double.parseDouble(jse.executeScript(jsQuery).toString());
-			cookrates.put(prodno, cookrate); 
-			return cookrate;
-//		}
+		String jsQuery="return Game.ObjectsById[" + prodno + "].storedTotalCps*Game.globalCpsMult";
+		Double cookrate = Double.parseDouble(jse.executeScript(jsQuery).toString());
+		return cookrate;
 	}
 
 	private static Double getPrice(int prodno) {
-//		if (prices.containsKey(prodno)) {
-//			return prices.get(prodno);
-//		} else {
-			String jsQuery = "return Game.ObjectsById[" + prodno + "].price";
-			Double price = Double.parseDouble(jse.executeScript(jsQuery).toString());
-			prices.put(prodno, price);
-			return price;
-//		}
+		String jsQuery = "return Game.ObjectsById[" + prodno + "].price";
+		Double price = Double.parseDouble(jse.executeScript(jsQuery).toString());
+		return price;
 	}
 }
