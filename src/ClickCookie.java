@@ -13,11 +13,11 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class ClickCookie {
-	private static int highproduct = 0;
 	private static JavascriptExecutor jse;
 	private static FirefoxDriver driver;
 	private final static String loadfilepath = "./resources/loadfile.txt";
 	private static Path loadfile;
+	private static int highproduct = 0;
 
 	public static void main(String[] args) throws IOException {
 		driver = new FirefoxDriver();
@@ -29,7 +29,7 @@ public class ClickCookie {
 
 		while (true) {
 			if (highproduct < 10) updateHighProduct();
-			driver.findElement(By.id("product"+ bestProdToBuy())).click();
+			driver.findElement(By.id("product" + Greedy.bestProdToBuy())).click();
 			saveGame();
 
 			long t = System.currentTimeMillis();
@@ -70,22 +70,26 @@ public class ClickCookie {
 		}
 	}
 
-	private static int bestProdToBuy() {
-		int i = highproduct;
-		while ((i > 0) && (getPrice(i) > getCookiesInBank())) { i--; }
-		System.out.println("Can afford: " + i);
-		while ((i > 0) && (!isHigherWorthIt(i))) { i--; }
-		System.out.println("Will buy: " + i);
-		return i;
-	}
+	public class Dynamic { }
 
-	private static boolean isHigherWorthIt(int high) {
-		double hiprice = getPrice(high);
-		double hicooksec = getCookiePerSecond(high);
-		double loprice = getPrice(high - 1);
-		double locooksec = getCookiePerSecond(high - 1);
-		System.out.println(high + " Ratio: " + hiprice/hicooksec + " and " + (high - 1) + " Ratio: " + loprice/locooksec);
-		return (hiprice/hicooksec) < (loprice/locooksec);
+	public static class Greedy {
+		private static int bestProdToBuy() {
+			int i = highproduct;
+			while ((i > 0) && (getPrice(i) > getCookiesInBank())) { i--; }
+			System.out.println("Can afford: " + i);
+			while ((i > 0) && (!isHigherWorthIt(i))) { i--; }
+			System.out.println("Will buy: " + i);
+			return i;
+		}
+	
+		private static boolean isHigherWorthIt(int high) {
+			double hiprice = getPrice(high);
+			double hicooksec = getCookiePerSecond(high);
+			double loprice = getPrice(high - 1);
+			double locooksec = getCookiePerSecond(high - 1);
+			System.out.println(high + " Ratio: " + hiprice/hicooksec + " and " + (high - 1) + " Ratio: " + loprice/locooksec);
+			return (hiprice/hicooksec) < (loprice/locooksec);
+		}
 	}
 
 	private static Double getCookiesInBank() {
