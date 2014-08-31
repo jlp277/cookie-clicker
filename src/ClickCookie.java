@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.openqa.selenium.By;
@@ -17,7 +18,8 @@ public class ClickCookie {
 	private static FirefoxDriver driver;
 	private final static String loadfilepath = "./resources/loadfile.txt";
 	private static Path loadfile;
-	private static int highproduct = 0;
+	private static int highest = 0;
+	private static int highestafford = 0;
 
 	public static void main(String[] args) throws IOException {
 		driver = new FirefoxDriver();
@@ -28,8 +30,8 @@ public class ClickCookie {
 		loadGame();
 
 		while (true) {
-			if (highproduct < 10) updateHighProduct();
-			driver.findElement(By.id("product" + Greedy.bestProdToBuy())).click();
+			if (highest < 10) updateHighProducts();
+			driver.findElement(By.id("product" + Dynamic.bestProdToBuy())).click();
 			saveGame();
 
 			long t = System.currentTimeMillis();
@@ -63,18 +65,51 @@ public class ClickCookie {
 		Files.write(loadfile, loadcode);
 	}
 
-	private static void updateHighProduct() {
-		String jsQuery = "return Game.ObjectsById[" + (highproduct + 1) + "].locked";
+	private static void updateHighProducts() {
+		String jsQuery = "return Game.ObjectsById[" + (highest + 1) + "].locked";
 		if (Integer.parseInt(jse.executeScript(jsQuery).toString()) == 0) {
-			highproduct++;
+			highest++;
+			if (getPrice(highest) < getCookiesInBank()) {
+				highestafford++;
+			}
 		}
 	}
 
-	public class Dynamic { }
+	public class Dynamic {
+		private final int SHRINK_THRES = 1000;
+		private Double shrinkfactor;
+		
+		private int bestProdToBuy() {
+			int n = 0;
+			Double cookies = getCookiesInBank();
+			shrinkfactor = (cookies > SHRINK_THRES) ? (cookies / SHRINK_THRES) : Double.valueOf(1);
+			for (n = highestafford; n <= highest; n++) {
+				knapSack(n, shrink(cookies));
+				// TODO (2) keep list of objects with max value
+			}
+			return n;
+		}
+		
+		private List<Integer> knapSack(int n, int capacity) {
+			Double[][] opt = new Double[n][capacity + 1];
+			for (int w = 0; w <= capacity; w++) { opt[0][capacity] = (double) 0; }
+			for (int i = 1; i < n; i++) {
+				for (int w = 0; w <= capacity; w++) {
+					opt[i][w] = Double.max(shrink(getProdCookiePerSecond(i)) + opt[i-1][w - shrink(getPrice(i))] , opt[i-1][w]);
+				}
+			}
+			// TODO (1) generate list of items from opt[];
+		}
+		
+		// guarantees knapsack wont chew on a capacity larger than 1000
+		private int shrink(Double largething) {
+			return ((Double) (largething / shrinkfactor)).intValue();
+		}
+	}
 
 	public static class Greedy {
 		private static int bestProdToBuy() {
-			int i = highproduct;
+			int i = highest;
 			while ((i > 0) && (getPrice(i) > getCookiesInBank())) { i--; }
 			System.out.println("Can afford: " + i);
 			while ((i > 0) && (!isHigherWorthIt(i))) { i--; }
@@ -84,9 +119,9 @@ public class ClickCookie {
 	
 		private static boolean isHigherWorthIt(int high) {
 			double hiprice = getPrice(high);
-			double hicooksec = getCookiePerSecond(high);
+			double hicooksec = getProdCookiePerSecond(high);
 			double loprice = getPrice(high - 1);
-			double locooksec = getCookiePerSecond(high - 1);
+			double locooksec = getProdCookiePerSecond(high - 1);
 			System.out.println(high + " Ratio: " + hiprice/hicooksec + " and " + (high - 1) + " Ratio: " + loprice/locooksec);
 			return (hiprice/hicooksec) < (loprice/locooksec);
 		}
@@ -98,7 +133,7 @@ public class ClickCookie {
 		return cookrate;
 	}
 
-	private static Double getCookiePerSecond(int prodno) {
+	private static Double getProdCookiePerSecond(int prodno) {
 		String jsQuery="return Game.ObjectsById[" + prodno + "].storedTotalCps*Game.globalCpsMult";
 		Double cookrate = Double.parseDouble(jse.executeScript(jsQuery).toString());
 		return cookrate;
